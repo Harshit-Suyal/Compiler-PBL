@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LR Parser Simulator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header class="app-header">
+            <h1>LR Parser Simulator</h1>
+            <p class="subtitle">SLR, CLR, and LALR parsing visual workspace</p>
+        </header>
+
+        <div class="workspace">
+            <div class="sidebar">
+                <h3>Grammar</h3>
+                <textarea id="grammarInput" placeholder="E -> E + T | T
+T -> T * F | F
+F -> ( E ) | id"></textarea>
+
+                <h3>Parser Type</h3>
+                <select id="parserType">
+                    <option value="SLR">SLR</option>
+                    <option value="CLR">CLR</option>
+                    <option value="LALR">LALR</option>
+                </select>
+
+                <h3>Precedence</h3>
+                <textarea id="precedenceInput" placeholder="+ 1 left
+* 2 left"></textarea>
+
+                <div class="button-container">
+                    <button id="analyzeBtn" class="btn-primary">Analyze Grammar</button>
+                    <button id="clearBtn" class="btn-secondary">Clear</button>
+                    <button id="exampleBtn" class="btn-secondary">Load Example</button>
+                </div>
+
+                <div id="loadingIndicator" class="loading-indicator">Analyzing grammar...</div>
+                <div id="errorMessage" class="error-message"></div>
+            </div>
+
+            <div class="main-panel">
+                <div id="statusBar" class="status-bar">Ready. Add grammar and click Analyze Grammar.</div>
+
+                <div class="tabs">
+                    <button class="tab-btn active" onclick="showTab('states')">States</button>
+                    <button class="tab-btn" onclick="showTab('dfa')">DFA</button>
+                    <button class="tab-btn" onclick="showTab('table')">Table</button>
+                    <button class="tab-btn" onclick="showTab('steps')">Steps</button>
+                    <button class="tab-btn" onclick="showTab('tree')">Parse Tree</button>
+                    <button class="tab-btn" onclick="showTab('conflicts')">Conflicts</button>
+                </div>
+
+                <div id="states" class="tab-content active"></div>
+                <div id="dfa" class="tab-content"></div>
+                <div id="table" class="tab-content"></div>
+                <div id="steps" class="tab-content"></div>
+                <div id="tree" class="tab-content"></div>
+                <div id="conflicts" class="tab-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="scripts/globals.js"></script>
+    <script src="scripts/grammar.js"></script>
+    <script src="scripts/first-follow.js"></script>
+    <script src="scripts/lr0.js"></script>
+    <script src="scripts/parsing-table.js"></script>
+    <script src="scripts/parser.js"></script>
+    <script src="scripts/display.js"></script>
+    <script src="scripts/main.js"></script>
+</body>
+</html>
