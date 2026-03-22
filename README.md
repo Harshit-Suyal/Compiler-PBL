@@ -28,6 +28,51 @@ It lets you input a grammar, choose a parser type (**SLR**, **CLR**, or **LALR**
 - Conflict reporting (shift/reduce, reduce/reduce) + resolved conflicts (if applicable)
 
 ---
+## Features
+
+- **Grammar input** (multi-production format using `|`)
+- **Parser modes**:
+  - SLR
+  - CLR 
+  - LALR
+- **Operator precedence support** (priority + associativity)
+- **Tabs/Views**:
+  - States
+  - DFA
+  - Table
+  - Steps
+  - Parse Tree
+  - Conflicts
+- **Interactive parsing**: enter an input like `id + id * id` and simulate parsing
+- **Visualization** using **D3.js**
+
+---
+
+## Tech Stack
+
+- **HTML / CSS / JavaScript**
+- **D3.js (v7)** for visualization
+
+---
+
+## Project Structure
+
+```text
+.
+├── index.html
+├── style.css
+└── scripts/
+    ├── main.js              # UI events + main analysis pipeline
+    ├── globals.js           # shared global state
+    ├── grammar.js           # grammar parsing + augmentation helpers
+    ├── first-follow.js      # FIRST/FOLLOW computation
+    ├── lr0.js               # LR item/state construction utilities
+    ├── parsing-table.js     # ACTION/GOTO table generation + conflicts
+    ├── parser.js            # parse simulation using generated tables
+    └── display.js           # rendering results into UI tabs
+```
+
+---
 
 ## Explanation (What this simulator does)
 
