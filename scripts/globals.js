@@ -20,4 +20,4 @@ let nonTerminals = new Set();
 let terminals = new Set();
 let startSymbol = '';
 let precedence = {}; // { operator: { level: number, assoc: 'left'|'right'|'none' } }
-let productionPrecedence = []; // Precedence for each production
+let productionPrecedence = []; // Precedence for each production written
