@@ -3,22 +3,18 @@
 // ============================================
 
 function parseGrammar(input) {
-    const lines = input.split('\n').map(line => line.trim()).filter(line => line.length > 0);
-    
+    const lines = input.split('\n').map(line => line.trim()).filter(line => line.length > 0);    
     if (lines.length === 0) {
         throw new Error('Grammar cannot be empty');
     }
-    
     const parsedGrammar = {};
     const allNonTerminals = new Set();
     const usedSymbols = new Set();
-    
     for (let line of lines) {
         // Check for arrow format
         if (!line.includes('->')) {
             throw new Error(`Invalid production format: ${line}. Expected '->'`);
         }
-        
         const parts = line.split('->').map(p => p.trim());
         
         if (parts.length !== 2) {
@@ -36,9 +32,7 @@ function parseGrammar(input) {
         if (!/^[A-Z][A-Z0-9]*'*$/.test(lhs)) {
             throw new Error(`LHS must be a non-terminal (uppercase): ${lhs}`);
         }
-        
         allNonTerminals.add(lhs);
-        
         // Parse alternatives
         const alternatives = rhsPart.split('|').map(alt => alt.trim());
         

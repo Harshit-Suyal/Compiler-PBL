@@ -1,6 +1,5 @@
-// ============================================
-// FIRST AND FOLLOW SET COMPUTATION
-// ============================================
+// FIRST AND FOLLOW COMPUTATION
+
 
 function computeFirstSets() {
     const first = {};
