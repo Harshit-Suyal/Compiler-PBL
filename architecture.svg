@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 830" width="1280" height="830"
+     font-family="Arial, Helvetica, sans-serif">
+
+  <defs>
+    <marker id="arr" viewBox="0 0 10 8" refX="9" refY="4"
+            markerWidth="8" markerHeight="8" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#555"/>
+    </marker>
+    <marker id="arr-w" viewBox="0 0 10 8" refX="9" refY="4"
+            markerWidth="8" markerHeight="8" orient="auto">
+      <polygon points="0 0, 10 4, 0 8" fill="#aaa"/>
+    </marker>
+  </defs>
+
+  <!-- ═══ BACKGROUND ═══ -->
+  <rect width="1280" height="830" fill="#f0f2f5"/>
+
+  <!-- ═══ SWIM-LANE BANDS ═══ -->
+  <!-- Input -->
+  <rect x="12" y="60"  width="840" height="68"  rx="7" fill="#EBF5FB" stroke="#AED6F1" stroke-width="1.2"/>
+  <!-- Grammar Module -->
+  <rect x="12" y="140" width="840" height="135" rx="7" fill="#F5EEF8" stroke="#C39BD3" stroke-width="1.2"/>
+  <!-- FIRST / FOLLOW -->
+  <rect x="12" y="287" width="840" height="68"  rx="7" fill="#E8F8F5" stroke="#A3E4D7" stroke-width="1.2"/>
+  <!-- LR Item Sets -->
+  <rect x="12" y="367" width="840" height="135" rx="7" fill="#FEF9E7" stroke="#F9E79F" stroke-width="1.2"/>
+  <!-- Parsing Table -->
+  <rect x="12" y="514" width="840" height="88"  rx="7" fill="#FDEDEC" stroke="#F5B7B1" stroke-width="1.2"/>
+  <!-- Simulation -->
+  <rect x="12" y="614" width="840" height="68"  rx="7" fill="#EAFAF1" stroke="#A9DFBF" stroke-width="1.2"/>
+  <!-- Visualization -->
+  <rect x="12" y="694" width="840" height="68"  rx="7" fill="#EBF5FB" stroke="#AED6F1" stroke-width="1.2"/>
+
+  <!-- ═══ GLOBAL STATE PANEL ═══ -->
+  <rect x="878" y="140" width="194" height="395" rx="8"
+        fill="#FDFEFE" stroke="#BDC3C7" stroke-width="1.5" stroke-dasharray="6,3"/>
+  <text x="975" y="162" text-anchor="middle" font-size="11" font-weight="bold" fill="#555">globals.js</text>
+  <text x="975" y="180" text-anchor="middle" font-size="9.5" fill="#888">shared mutable state</text>
+
+  <!-- global state items -->
+  <text x="888" y="202" font-size="9" fill="#666">grammar { }</text>
+  <text x="888" y="216" font-size="9" fill="#666">augmentedGrammar { }</text>
+  <text x="888" y="230" font-size="9" fill="#666">startSymbol</text>
+  <text x="888" y="244" font-size="9" fill="#666">nonTerminals (Set)</text>
+  <text x="888" y="258" font-size="9" fill="#666">terminals (Set)</text>
+  <text x="888" y="272" font-size="9" fill="#555">─────────────────</text>
+  <text x="888" y="286" font-size="9" fill="#666">firstSets { }</text>
+  <text x="888" y="300" font-size="9" fill="#666">followSets { }</text>
+  <text x="888" y="314" font-size="9" fill="#555">─────────────────</text>
+  <text x="888" y="328" font-size="9" fill="#666">parserMode</text>
+  <text x="888" y="342" font-size="9" fill="#666">parserStates [ ]</text>
+  <text x="888" y="356" font-size="9" fill="#666">stateTransitions { }</text>
+  <text x="888" y="370" font-size="9" fill="#555">─────────────────</text>
+  <text x="888" y="384" font-size="9" fill="#666">actionTable { }</text>
+  <text x="888" y="398" font-size="9" fill="#666">gotoTable { }</text>
+  <text x="888" y="412" font-size="9" fill="#666">conflicts [ ]</text>
+  <text x="888" y="426" font-size="9" fill="#666">resolvedConflicts [ ]</text>
+  <text x="888" y="440" font-size="9" fill="#555">─────────────────</text>
+  <text x="888" y="454" font-size="9" fill="#666">precedence { }</text>
+  <text x="888" y="468" font-size="9" fill="#666">productionPrecedence [ ]</text>
+  <text x="888" y="482" font-size="9" fill="#666">parseTree</text>
+  <text x="888" y="496" font-size="9" fill="#666">algorithmComparison { }</text>
+  <text x="888" y="520" font-size="9.5" fill="#888" font-style="italic">All modules read/write</text>
+  <text x="888" y="533" font-size="9.5" fill="#888" font-style="italic">these globals directly</text>
+
+  <!-- ═══ TITLES / LANE LABELS ═══ -->
+  <text x="24" y="100" font-size="9.5" font-weight="bold" fill="#2980B9">① INPUT</text>
+  <text x="24" y="176" font-size="9.5" font-weight="bold" fill="#8E44AD">② GRAMMAR MODULE</text>
+  <text x="24" y="308" font-size="9.5" font-weight="bold" fill="#16A085">③ FIRST / FOLLOW</text>
+  <text x="24" y="388" font-size="9.5" font-weight="bold" fill="#D35400">④ LR ITEM SET BUILDER</text>
+  <text x="24" y="534" font-size="9.5" font-weight="bold" fill="#C0392B">⑤ PARSING TABLE</text>
+  <text x="24" y="634" font-size="9.5" font-weight="bold" fill="#27AE60">⑥ SIMULATION</text>
+  <text x="24" y="714" font-size="9.5" font-weight="bold" fill="#2471A3">⑦ VISUALIZATION</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LAYER 1: USER INPUT (y ≈ 70)                  -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- Grammar Input -->
+  <rect x="70" y="70" width="185" height="48" rx="7" fill="#2980B9" stroke="#1A6499"/>
+  <text x="163" y="90" text-anchor="middle" font-size="11" font-weight="bold" fill="white">Grammar Input</text>
+  <text x="163" y="107" text-anchor="middle" font-size="9" fill="#D6EAF8">#grammarInput (textarea)</text>
+
+  <!-- Precedence Input -->
+  <rect x="335" y="70" width="185" height="48" rx="7" fill="#2980B9" stroke="#1A6499"/>
+  <text x="427" y="90" text-anchor="middle" font-size="11" font-weight="bold" fill="white">Precedence Input</text>
+  <text x="427" y="107" text-anchor="middle" font-size="9" fill="#D6EAF8">#precedenceInput (textarea)</text>
+
+  <!-- Parser Mode Selector -->
+  <rect x="600" y="70" width="210" height="48" rx="7" fill="#2980B9" stroke="#1A6499"/>
+  <text x="705" y="90" text-anchor="middle" font-size="11" font-weight="bold" fill="white">Parser Mode Selector</text>
+  <text x="705" y="107" text-anchor="middle" font-size="9" fill="#D6EAF8">#parserType: SLR | CLR | LALR</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LAYER 2: GRAMMAR MODULE (y ≈ 155 and 225)     -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- parseGrammar() / tokenize() -->
+  <rect x="55" y="155" width="230" height="50" rx="7" fill="#8E44AD" stroke="#6C3483"/>
+  <text x="170" y="175" text-anchor="middle" font-size="11" font-weight="bold" fill="white">parseGrammar() + tokenize()</text>
+  <text x="170" y="195" text-anchor="middle" font-size="9" fill="#E8DAEF">grammar.js : 5–140</text>
+
+  <!-- parsePrecedence() -->
+  <rect x="370" y="155" width="190" height="50" rx="7" fill="#8E44AD" stroke="#6C3483"/>
+  <text x="465" y="175" text-anchor="middle" font-size="11" font-weight="bold" fill="white">parsePrecedence()</text>
+  <text x="465" y="195" text-anchor="middle" font-size="9" fill="#E8DAEF">grammar.js : 142–176</text>
+
+  <!-- augmentGrammar() -->
+  <rect x="55" y="225" width="195" height="45" rx="7" fill="#7D3C98" stroke="#5B2C6F"/>
+  <text x="153" y="244" text-anchor="middle" font-size="11" font-weight="bold" fill="white">augmentGrammar()</text>
+  <text x="153" y="260" text-anchor="middle" font-size="9" fill="#E8DAEF">grammar.js : 203–219</text>
+
+  <!-- computeProductionPrecedence() -->
+  <rect x="310" y="225" width="240" height="45" rx="7" fill="#7D3C98" stroke="#5B2C6F"/>
+  <text x="430" y="244" text-anchor="middle" font-size="11" font-weight="bold" fill="white">computeProductionPrecedence()</text>
+  <text x="430" y="260" text-anchor="middle" font-size="9" fill="#E8DAEF">grammar.js : 178–201</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LAYER 3: FIRST / FOLLOW (y ≈ 297)             -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- computeFirstSets() -->
+  <rect x="55" y="297" width="210" height="48" rx="7" fill="#16A085" stroke="#0E6655"/>
+  <text x="160" y="317" text-anchor="middle" font-size="11" font-weight="bold" fill="white">computeFirstSets()</text>
+  <text x="160" y="335" text-anchor="middle" font-size="9" fill="#D5F5E3">first-follow.js : 4–45</text>
+
+  <!-- computeFollowSets() -->
+  <rect x="340" y="297" width="210" height="48" rx="7" fill="#16A085" stroke="#0E6655"/>
+  <text x="445" y="317" text-anchor="middle" font-size="11" font-weight="bold" fill="white">computeFollowSets()</text>
+  <text x="445" y="335" text-anchor="middle" font-size="9" fill="#D5F5E3">first-follow.js : 102–178</text>
+
+  <!-- computeFirstOfSequence() (helper) -->
+  <rect x="625" y="297" width="200" height="48" rx="7" fill="#1ABC9C" stroke="#16A085"/>
+  <text x="725" y="317" text-anchor="middle" font-size="11" font-weight="bold" fill="white">computeFirstOfSequence()</text>
+  <text x="725" y="335" text-anchor="middle" font-size="9" fill="#D5F5E3">first-follow.js : 47–100</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LAYER 4: LR ITEM SETS (y ≈ 377 + 440)        -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- buildItemSetsForMode() dispatcher -->
+  <rect x="230" y="377" width="240" height="48" rx="7" fill="#D35400" stroke="#A04000"/>
+  <text x="350" y="397" text-anchor="middle" font-size="11" font-weight="bold" fill="white">buildItemSetsForMode(mode)</text>
+  <text x="350" y="414" text-anchor="middle" font-size="9" fill="#FDEBD0">lr0.js : 349–360</text>
+
+  <!-- LR(0) box -->
+  <rect x="55" y="440" width="180" height="52" rx="7" fill="#E67E22" stroke="#CA6F1E"/>
+  <text x="145" y="458" text-anchor="middle" font-size="11" font-weight="bold" fill="white">LR(0) Collection</text>
+  <text x="145" y="473" text-anchor="middle" font-size="9" fill="#FDEBD0">buildCanonicalCollectionLR0()</text>
+  <text x="145" y="486" text-anchor="middle" font-size="8.5" fill="#FDEBD0">lr0.js : 208–255</text>
+
+  <!-- LR(1) box -->
+  <rect x="270" y="440" width="180" height="52" rx="7" fill="#E67E22" stroke="#CA6F1E"/>
+  <text x="360" y="458" text-anchor="middle" font-size="11" font-weight="bold" fill="white">LR(1) Collection</text>
+  <text x="360" y="473" text-anchor="middle" font-size="9" fill="#FDEBD0">buildCanonicalCollectionLR1()</text>
+  <text x="360" y="486" text-anchor="middle" font-size="8.5" fill="#FDEBD0">lr0.js : 257–304</text>
+
+  <!-- LALR merger box -->
+  <rect x="485" y="440" width="195" height="52" rx="7" fill="#E67E22" stroke="#CA6F1E"/>
+  <text x="582" y="458" text-anchor="middle" font-size="11" font-weight="bold" fill="white">LALR Merger</text>
+  <text x="582" y="473" text-anchor="middle" font-size="9" fill="#FDEBD0">mergeLR1StatesToLALR()</text>
+  <text x="582" y="486" text-anchor="middle" font-size="8.5" fill="#FDEBD0">lr0.js : 306–347</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LAYER 5: PARSING TABLE (y ≈ 524 + 566)       -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- buildParsingTable() -->
+  <rect x="130" y="524" width="220" height="48" rx="7" fill="#C0392B" stroke="#922B21"/>
+  <text x="240" y="543" text-anchor="middle" font-size="11" font-weight="bold" fill="white">buildParsingTable()</text>
+  <text x="240" y="561" text-anchor="middle" font-size="9" fill="#FADBD8">parsing-table.js : 17–123</text>
+
+  <!-- resolveConflict() -->
+  <rect x="420" y="524" width="185" height="48" rx="7" fill="#C0392B" stroke="#922B21"/>
+  <text x="512" y="543" text-anchor="middle" font-size="11" font-weight="bold" fill="white">resolveConflict()</text>
+  <text x="512" y="561" text-anchor="middle" font-size="9" fill="#FADBD8">parsing-table.js : 125–186</text>
+
+  <!-- ACTION Table output -->
+  <rect x="55" y="582" width="155" height="40" rx="6" fill="#E74C3C" stroke="#C0392B"/>
+  <text x="132" y="598" text-anchor="middle" font-size="10.5" font-weight="bold" fill="white">ACTION Table</text>
+  <text x="132" y="613" text-anchor="middle" font-size="8.5" fill="#FADBD8">shift sN / reduce rN / acc</text>
+
+  <!-- GOTO Table output -->
+  <rect x="225" y="582" width="155" height="40" rx="6" fill="#E74C3C" stroke="#C0392B"/>
+  <text x="302" y="598" text-anchor="middle" font-size="10.5" font-weight="bold" fill="white">GOTO Table</text>
+  <text x="302" y="613" text-anchor="middle" font-size="8.5" fill="#FADBD8">non-terminal transitions</text>
+
+  <!-- Conflicts output -->
+  <rect x="400" y="582" width="175" height="40" rx="6" fill="#E74C3C" stroke="#C0392B"/>
+  <text x="487" y="598" text-anchor="middle" font-size="10.5" font-weight="bold" fill="white">conflicts[ ] / resolved[ ]</text>
+  <text x="487" y="613" text-anchor="middle" font-size="8.5" fill="#FADBD8">shift-reduce / reduce-reduce</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LAYER 6: SIMULATION (y ≈ 624)                 -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- Input string label -->
+  <rect x="55" y="626" width="140" height="42" rx="6" fill="#27AE60" stroke="#1E8449"/>
+  <text x="125" y="643" text-anchor="middle" font-size="10.5" font-weight="bold" fill="white">Input String</text>
+  <text x="125" y="658" text-anchor="middle" font-size="8.5" fill="#D5F5E3">#parseInput (tokenize)</text>
+
+  <!-- simulateParsing() -->
+  <rect x="240" y="622" width="230" height="50" rx="7" fill="#27AE60" stroke="#1E8449"/>
+  <text x="355" y="641" text-anchor="middle" font-size="11" font-weight="bold" fill="white">simulateParsing(tokens)</text>
+  <text x="355" y="657" text-anchor="middle" font-size="9" fill="#D5F5E3">parser.js : 60–183</text>
+  <text x="355" y="669" text-anchor="middle" font-size="8.5" fill="#D5F5E3">stack / symbolStack / nodeStack</text>
+
+  <!-- Parse Steps output -->
+  <rect x="510" y="626" width="145" height="42" rx="6" fill="#1E8449" stroke="#196F3D"/>
+  <text x="582" y="644" text-anchor="middle" font-size="10.5" font-weight="bold" fill="white">Parse Steps[ ]</text>
+  <text x="582" y="659" text-anchor="middle" font-size="8.5" fill="#D5F5E3">step, stack, input, action</text>
+
+  <!-- Parse Tree Node output -->
+  <rect x="668" y="626" width="145" height="42" rx="6" fill="#1E8449" stroke="#196F3D"/>
+  <text x="740" y="644" text-anchor="middle" font-size="10.5" font-weight="bold" fill="white">parseTree node</text>
+  <text x="740" y="659" text-anchor="middle" font-size="8.5" fill="#D5F5E3">{ symbol, children[ ] }</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- LAYER 7: VISUALIZATION (y ≈ 704)              -->
+  <!-- ═══════════════════════════════════════════════ -->
+
+  <!-- displayLR0States -->
+  <rect x="28" y="704" width="145" height="48" rx="7" fill="#2471A3" stroke="#1A5276"/>
+  <text x="100" y="722" text-anchor="middle" font-size="10" font-weight="bold" fill="white">States Tab</text>
+  <text x="100" y="737" text-anchor="middle" font-size="8.5" fill="#D6EAF8">Item set cards</text>
+  <text x="100" y="748" text-anchor="middle" font-size="8" fill="#D6EAF8">displayLR0States()</text>
+
+  <!-- DFA SVG -->
+  <rect x="183" y="704" width="145" height="48" rx="7" fill="#2471A3" stroke="#1A5276"/>
+  <text x="255" y="722" text-anchor="middle" font-size="10" font-weight="bold" fill="white">DFA Tab</text>
+  <text x="255" y="737" text-anchor="middle" font-size="8.5" fill="#D6EAF8">SVG automaton</text>
+  <text x="255" y="748" text-anchor="middle" font-size="8" fill="#D6EAF8">displayTransitions()</text>
+
+  <!-- Table Tab -->
+  <rect x="338" y="704" width="145" height="48" rx="7" fill="#2471A3" stroke="#1A5276"/>
+  <text x="410" y="722" text-anchor="middle" font-size="10" font-weight="bold" fill="white">Table Tab</text>
+  <text x="410" y="737" text-anchor="middle" font-size="8.5" fill="#D6EAF8">ACTION / GOTO</text>
+  <text x="410" y="748" text-anchor="middle" font-size="8" fill="#D6EAF8">displayActionTable/Goto()</text>
+
+  <!-- Steps Tab -->
+  <rect x="493" y="704" width="145" height="48" rx="7" fill="#2471A3" stroke="#1A5276"/>
+  <text x="565" y="722" text-anchor="middle" font-size="10" font-weight="bold" fill="white">Steps Tab</text>
+  <text x="565" y="737" text-anchor="middle" font-size="8.5" fill="#D6EAF8">Step-by-step trace</text>
+  <text x="565" y="748" text-anchor="middle" font-size="8" fill="#D6EAF8">displayParsingSteps()</text>
+
+  <!-- Tree Tab -->
+  <rect x="648" y="704" width="145" height="48" rx="7" fill="#2471A3" stroke="#1A5276"/>
+  <text x="720" y="722" text-anchor="middle" font-size="10" font-weight="bold" fill="white">Tree Tab</text>
+  <text x="720" y="737" text-anchor="middle" font-size="8.5" fill="#D6EAF8">D3.js parse tree</text>
+  <text x="720" y="748" text-anchor="middle" font-size="8" fill="#D6EAF8">displayParseTree()</text>
+
+  <!-- Conflicts Tab -->
+  <rect x="803" y="704" width="49" height="48" rx="7" fill="#2471A3" stroke="#1A5276"/>
+  <text x="827" y="724" text-anchor="middle" font-size="8.5" font-weight="bold" fill="white">Con-</text>
+  <text x="827" y="737" text-anchor="middle" font-size="8.5" font-weight="bold" fill="white">flicts</text>
+  <text x="827" y="748" text-anchor="middle" font-size="7.5" fill="#D6EAF8">Tab</text>
+
+  <!-- ═══════════════════════════════════════════════ -->
+  <!-- ALGORITHM COMPARISON (right panel)            -->
+  <!-- ═══════════════════════════════════════════════ -->
+  <rect x="878" y="548" width="194" height="85" rx="7"
+        fill="#F9EBEA" stroke="#E74C3C" stroke-width="1.2"/>
+  <text x="975" y="567" text-anchor="middle" font-size="11" font-weight="bold" fill="#C0392B">Algorithm Comparison</text>
+  <text x="975" y="582" text-anchor="middle" font-size="9.5" fill="#555">computeAlgorithmComparison()</text>
+  <text x="975" y="596" text-anchor="middle" font-size="9" fill="#888">main.js : 259–294</text>
+  <text x="975" y="611" text-anchor="middle" font-size="9" fill="#888">SLR vs CLR vs LALR:</text>
+  <text x="975" y="625" text-anchor="middle" font-size="9" fill="#888">states · table size · conflicts</text>
+
+  <!-- main analyzeGrammar() orchestrator -->
+  <rect x="878" y="648" width="194" height="65" rx="7"
+        fill="#FDFEFE" stroke="#27AE60" stroke-width="1.5"/>
+  <text x="975" y="666" text-anchor="middle" font-size="11" font-weight="bold" fill="#27AE60">analyzeGrammar()</text>
+  <text x="975" y="681" text-anchor="middle" font-size="9.5" fill="#555">main.js : 186–257</text>
+  <text x="975" y="695" text-anchor="middle" font-size="8.5" fill="#888">Orchestrates steps 1–10</text>
+  <text x="975" y="707" text-anchor="middle" font-size="8.5" fill="#888">triggered by Analyze btn</text>
+
+  <!-- ═══════════════════════════════════════════════════════════ -->
+  <!-- ARROWS                                                     -->
+  <!-- ═══════════════════════════════════════════════════════════ -->
+
+  <!-- Grammar Input → parseGrammar() -->
+  <line x1="163" y1="118" x2="163" y2="153" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Precedence Input → parsePrecedence() -->
+  <line x1="427" y1="118" x2="449" y2="153" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- parseGrammar() → augmentGrammar() -->
+  <line x1="170" y1="205" x2="153" y2="223" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- parsePrecedence() → computeProdPrecedence() -->
+  <line x1="465" y1="205" x2="445" y2="223" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- augmentGrammar() → computeFirstSets() -->
+  <line x1="153" y1="270" x2="153" y2="295" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- computeProdPrec → computeFirstSets() (via connect) -->
+  <line x1="400" y1="270" x2="270" y2="295" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- computeFirstSets → computeFollowSets() -->
+  <line x1="265" y1="321" x2="338" y2="321" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- computeFirstSets → computeFirstOfSequence -->
+  <line x1="265" y1="310" x2="623" y2="310" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-w)"/>
+
+  <!-- computeFollowSets → computeFirstOfSequence -->
+  <line x1="550" y1="310" x2="623" y2="310" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-w)"/>
+
+  <!-- augmentGrammar() → buildItemSetsForMode() (via long path) -->
+  <polyline points="250,248 295,248 295,401" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Parser Mode → buildItemSetsForMode() -->
+  <polyline points="705,118 705,355 470,401" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- buildItemSetsForMode → LR(0) -->
+  <polyline points="310,425 230,425 230,438" fill="none" stroke="#D35400" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="215" y="435" font-size="8.5" fill="#D35400">SLR</text>
+
+  <!-- buildItemSetsForMode → LR(1) -->
+  <line x1="350" y1="425" x2="360" y2="438" stroke="#D35400" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="353" y="435" font-size="8.5" fill="#D35400">CLR</text>
+
+  <!-- buildItemSetsForMode → LALR -->
+  <polyline points="395,425 510,425 510,438" fill="none" stroke="#D35400" stroke-width="1.5" marker-end="url(#arr)"/>
+  <text x="440" y="435" font-size="8.5" fill="#D35400">LALR</text>
+
+  <!-- LR(0) → buildParsingTable() -->
+  <polyline points="145,492 145,504 220,504 220,522" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- LR(1)/LALR → buildParsingTable() -->
+  <polyline points="360,492 360,504 270,504 270,522" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+  <polyline points="582,492 582,508 380,508 380,522" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- followSets → buildParsingTable (SLR uses FOLLOW) -->
+  <polyline points="160,345 160,352 620,352 620,508 350,508" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-w)"/>
+  <text x="540" y="348" font-size="8" fill="#16A085" font-style="italic">FOLLOW (SLR reduce)</text>
+
+  <!-- buildParsingTable → resolveConflict() -->
+  <line x1="350" y1="548" x2="418" y2="548" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- buildParsingTable → ACTION Table -->
+  <polyline points="200,572 160,572 160,580" fill="none" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- buildParsingTable → GOTO Table -->
+  <polyline points="240,572 302,572 302,580" fill="none" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- buildParsingTable / resolveConflict → conflicts -->
+  <polyline points="490,572 487,580" fill="none" stroke="#C0392B" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ACTION Table → simulateParsing -->
+  <polyline points="132,622 132,614 268,614 268,620" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- GOTO Table → simulateParsing -->
+  <polyline points="302,622 302,614 268,614 268,620" fill="none" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Input String → simulateParsing() -->
+  <line x1="195" y1="647" x2="238" y2="647" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- simulateParsing → Parse Steps -->
+  <line x1="470" y1="647" x2="508" y2="647" stroke="#1E8449" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- simulateParsing → Parse Tree Node -->
+  <line x1="470" y1="653" x2="666" y2="653" stroke="#1E8449" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Parse Steps → Steps Tab -->
+  <line x1="582" y1="668" x2="580" y2="702" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- Parse Tree → Tree Tab -->
+  <line x1="740" y1="668" x2="730" y2="702" stroke="#555" stroke-width="1.5" marker-end="url(#arr)"/>
+
+  <!-- ACTION Table → Table Tab -->
+  <polyline points="210,622 220,688 355,688 410,702" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-w)"/>
+
+  <!-- Item states → States Tab (display) -->
+  <polyline points="145,492 145,506 65,506 65,680 65,702" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-w)"/>
+
+  <!-- stateTransitions → DFA Tab -->
+  <polyline points="250,492 250,504 140,504 185,680 210,702" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-w)"/>
+
+  <!-- conflicts → Conflicts Tab -->
+  <polyline points="580,622 827,622 827,702" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3" marker-end="url(#arr-w)"/>
+
+  <!-- Algorithm Comparison → display -->
+  <polyline points="878,590 870,590 825,590" fill="none" stroke="#aaa" stroke-width="1.2" stroke-dasharray="4,3"/>
+
+  <!-- ═══ TITLE BLOCK ═══ -->
+  <text x="640" y="25" text-anchor="middle" font-size="17" font-weight="bold" fill="#1a252f">LR Parser Simulator — System Architecture &amp; Data Flow</text>
+  <text x="640" y="44" text-anchor="middle" font-size="9.5" fill="#7f8c8d">
+    grammar.js · first-follow.js · lr0.js · parsing-table.js · parser.js · display.js · main.js
+  </text>
+
+  <!-- ═══ LEGEND ═══ -->
+  <rect x="878" y="748" width="194" height="68" rx="6" fill="#FDFEFE" stroke="#BDC3C7" stroke-width="1"/>
+  <text x="975" y="763" text-anchor="middle" font-size="10" font-weight="bold" fill="#555">Legend</text>
+  <rect x="888" y="769" width="12" height="10" rx="2" fill="#2980B9"/><text x="904" y="779" font-size="8.5" fill="#555">User Input</text>
+  <rect x="888" y="783" width="12" height="10" rx="2" fill="#8E44AD"/><text x="904" y="793" font-size="8.5" fill="#555">Grammar Module</text>
+  <rect x="888" y="797" width="12" height="10" rx="2" fill="#16A085"/><text x="904" y="807" font-size="8.5" fill="#555">FIRST/FOLLOW</text>
+  <rect x="960" y="769" width="12" height="10" rx="2" fill="#D35400"/><text x="976" y="779" font-size="8.5" fill="#555">LR Item Sets</text>
+  <rect x="960" y="783" width="12" height="10" rx="2" fill="#C0392B"/><text x="976" y="793" font-size="8.5" fill="#555">Parsing Table</text>
+  <rect x="960" y="797" width="12" height="10" rx="2" fill="#27AE60"/><text x="976" y="807" font-size="8.5" fill="#555">Simulation</text>
+  <line x1="888" y1="811" x2="902" y2="811" stroke="#aaa" stroke-width="1.5" stroke-dasharray="4,3"/>
+  <text x="906" y="815" font-size="8.5" fill="#888">helper / indirect data flow</text>
+
+</svg>
