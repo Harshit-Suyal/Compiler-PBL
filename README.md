@@ -1,304 +1,273 @@
+# Compiler PBL - LR Parser Simulator (SLR / CLR / LALR)
+
+A web-based LR parser simulator developed as a Compiler Design Project-Based Learning (PBL) project.
+
 ## PBL Project Details
 
-- **Department:** CSE (Computer Science & Engineering)  
-- **Semester:** 6  
-- **Project Type:** PBL (Project-Based Learning)  
-- **Team Members:**
+- Department: CSE (Computer Science and Engineering)
+- Semester: 6
+- Project Type: PBL (Project-Based Learning)
+- Team Members:
   - Manas Joshi
   - Harshit Suyal
   - Ashwariy Bisht
   - Saumya Pratap Singh
 
----
+## Project Overview
 
-# Compiler PBL – LR Parser Simulator (SLR / CLR / LALR)
+This simulator helps students understand how LR-family parsers are built and used in practice.
 
-## Overview
+You can provide a context-free grammar, select parser mode (SLR, CLR, or LALR), optionally add operator precedence and associativity rules, and inspect every major artifact generated during parser construction and simulation.
 
-A web-based **LR Parser Simulator** built as a **Compiler Design PBL project**.  
-It lets you input a grammar, choose a parser type (**SLR**, **CLR**, or **LALR**), optionally define operator **precedence/associativity**, and then visualizes:
+The app visualizes:
 
 - Augmented grammar
 - FIRST and FOLLOW sets
 - Canonical item sets (states)
-- DFA transitions
-- ACTION / GOTO parsing tables
-- Parsing steps for an input string
+- DFA transitions between states
+- ACTION and GOTO parsing tables
+- Step-by-step parsing trace for an input string
 - Parse tree
-- Conflict reporting (shift/reduce, reduce/reduce) + resolved conflicts (if applicable)
+- Conflict report:
+  - shift/reduce
+  - reduce/reduce
+  - conflicts resolved via precedence (when applicable)
 
----
 ## Features
 
-- **Grammar input** (multi-production format using `|`)
-- **Parser modes**:
+- Grammar input with multi-production format using `|`
+- Parser modes:
   - SLR
-  - CLR 
+  - CLR (LR(1))
   - LALR
-- **Operator precedence support** (priority + associativity)
-- **Tabs/Views**:
+- Operator precedence and associativity support
+- Tab-based visual output:
   - States
   - DFA
   - Table
   - Steps
   - Parse Tree
   - Conflicts
-- **Interactive parsing**: enter an input like `id + id * id` and simulate parsing
-- **Visualization** using **D3.js**
-
----
+- Interactive parse simulation (for example: `id + id * id`)
+- Save parsing runs to browser local storage (valid, conflict-free grammar only)
+- Export full parsing report to `.txt` (valid, conflict-free grammar only)
+- D3.js-based DFA visualization
+- Built-in grammar examples with one-click cycling
+- Light and dark theme toggle
 
 ## Tech Stack
 
-- **HTML / CSS / JavaScript**
-- **D3.js (v7)** for visualization
-
----
+- HTML
+- CSS
+- JavaScript (vanilla)
+- D3.js v7 (for DFA rendering)
 
 ## Project Structure
 
 ```text
 .
-├── index.html
-├── style.css
-└── scripts/
-    ├── main.js              # UI events + main analysis pipeline
-    ├── globals.js           # shared global state
-    ├── grammar.js           # grammar parsing + augmentation helpers
-    ├── first-follow.js      # FIRST/FOLLOW computation
-    ├── lr0.js               # LR item/state construction utilities
-    ├── parsing-table.js     # ACTION/GOTO table generation + conflicts
-    ├── parser.js            # parse simulation using generated tables
-    └── display.js           # rendering results into UI tabs
+|-- index.html
+|-- style.css
+`-- scripts/
+    |-- main.js              # UI events + analysis pipeline
+    |-- globals.js           # shared global state
+    |-- grammar.js           # grammar parsing + augmentation helpers
+    |-- first-follow.js      # FIRST/FOLLOW computation
+    |-- lr0.js               # LR item/state construction utilities
+    |-- parsing-table.js     # ACTION/GOTO table generation + conflicts
+    |-- parser.js            # parse simulation + save/export snapshot logic
+    `-- display.js           # rendering into UI tabs
 ```
 
----
+## How to Run
 
-## Explanation (What this simulator does)
+No build tools are required.
 
-This simulator is designed to help understand how LR parsers are constructed and how they parse input strings step-by-step.
+1. Clone/download this project.
+2. Open the project folder in VS Code (or any editor).
+3. Open `index.html` in a browser.
 
-You can:
-1. **Enter a context-free grammar** (with multiple productions using `|`)
-2. **Select LR parser type**
-   - **SLR**: uses LR(0) items + FOLLOW sets to place reduce actions  
-   - **CLR (LR(1))**: uses LR(1) items with lookaheads for more precise parsing  
-   - **LALR**: merges compatible LR(1) states to reduce table size while keeping most CLR power
-3. **Generate and view**
-   - item sets / states
-   - DFA transitions
-   - parsing table (ACTION/GOTO)
-   - conflicts and (optional) conflict resolution using precedence rules
-4. **Simulate parsing**
-   - provide an input like `id + id * id`
-   - view stack/input/actions at every step
-   - view the final parse tree
+Optional local server method (recommended in some browsers):
 
-## Resolving Shift–Reduce Conflicts using Precedence & Associativity
+- Use VS Code Live Server extension, or
+- Run a simple local static server and open the served URL.
 
-When a grammar is **ambiguous**, the LR parser can produce **shift–reduce conflicts**.
+## How to Use the Simulator
 
-Example ambiguous grammar:
+1. Enter grammar in the Grammar box.
+2. Select parser type: `SLR`, `CLR`, or `LALR`.
+3. (Optional) Enter precedence rules.
+4. Click Analyze Grammar.
+5. Inspect generated output in tabs:
+   - States
+   - DFA
+   - Table
+   - Conflicts
+6. Go to Steps tab and enter input string to parse.
+7. Click Parse Input to see parsing trace and parse tree.
+8. Optionally:
+   - Save Steps: stores full run in browser local storage.
+   - Export Steps: downloads full run as a text file.
+
+## Grammar Input Format
+
+Each production must use `->`.
+
+Alternatives can be written using `|`.
+
+Example:
 
 ```text
-E → E + E | E * E | id
+E -> E + T | T
+T -> T * F | F
+F -> ( E ) | id
 ```
 
-This grammar does not specify whether `+` or `*` should be applied first, so during parsing the LR table may face a situation like:
+Input notes:
 
-- **SHIFT** (read more input), or
-- **REDUCE** (apply a rule now)
+- LHS non-terminals must be uppercase-style symbols (example: `E`, `T`, `S`, `E'`).
+- Tokens are whitespace-aware; common terminals like `id`, operators, and parentheses are supported.
+- Epsilon symbol is `ε`.
 
-To resolve this deterministically, we define **operator precedence** and **associativity**.
+## Precedence and Associativity Format
 
----
-
-## Precedence Format
-
-Write each operator rule in this format:
+Write one operator rule per line:
 
 ```text
 <operator> <precedence_level> <left|right|none>
 ```
 
-### Example
+Example:
 
 ```text
 + 1 left
 * 2 left
 ```
 
----
+Interpretation:
 
-## What Each Part Means
+- Higher number means higher precedence.
+- `left` means left-associative.
+- `right` means right-associative.
+- `none` means no associative chaining.
 
-### 1) Operator
-The symbol used in your grammar, such as:
+## Parser Modes (Implemented)
 
-- `+`, `*`, `-`, `/`
+- SLR:
+  - Uses LR(0) item cores
+  - Uses FOLLOW sets for reduce placement
+- CLR (LR(1)):
+  - Uses LR(1) items with explicit lookaheads
+- LALR:
+  - Builds LR(1) states then merges compatible states to reduce table size
 
-### 2) Precedence Level
-A number that defines priority:
+## Conflict Handling Logic
 
-- **Higher number = higher precedence**
-- **Lower number = lower precedence**
+The simulator detects parsing-table conflicts while constructing ACTION/GOTO entries.
 
-So in this example:
+If a shift/reduce conflict occurs and precedence metadata exists, conflict resolution follows:
 
-- `*` has precedence `2`
-- `+` has precedence `1`
+1. If precedence(input operator) > precedence(production operator): choose SHIFT
+2. If precedence(input operator) < precedence(production operator): choose REDUCE
+3. If equal precedence:
+   - left associativity -> REDUCE
+   - right associativity -> SHIFT
+   - none -> unresolved conflict
 
-That means:
+Reduce/reduce conflicts remain reported as conflicts.
 
-- `*` binds tighter than `+`
-- Multiplication happens before addition
+## Example: Ambiguous Expression Grammar
 
-### 3) Associativity
-Defines what happens when **operators of the same precedence** appear together.
-
-| Associativity | Meaning | Example idea |
-|---|---|---|
-| `left`  | Evaluate left to right  | `id - id - id` → `(id - id) - id` |
-| `right` | Evaluate right to left | `id ^ id ^ id` → `id ^ (id ^ id)` |
-| `none`  | No chaining allowed | `id < id < id` is invalid |
-
----
-
-## How Conflict Resolution Works (Logic)
-
-A shift–reduce conflict happens when the parser can either:
-
-- **SHIFT** the next input symbol (keep reading), or
-- **REDUCE** using a production rule (apply a grammar rule now)
-
-To decide, compare:
-
-1. **Input operator**  
-   The operator coming next in the input (lookahead).
-
-2. **Production operator**  
-   The operator involved in the reduction rule being considered.
-
----
-
-## Conflict Resolution Rules
-
-### Rule 1: Higher precedence → SHIFT 
-If:
+Grammar:
 
 ```text
-precedence(input operator) > precedence(production operator)
+E -> E + E | E * E | id
 ```
 
-Then:
+Precedence:
 
-- **SHIFT** (because the incoming operator should bind first)
-
-**Example**
 ```text
 + 1 left
 * 2 left
 ```
 
-If the parser is deciding between reducing `E + E` or shifting `*`:
+Input:
 
-- input operator = `*` (precedence 2)
-- production operator = `+` (precedence 1)
-
-Since `2 > 1` → **SHIFT**
-
-This enforces: multiplication before addition.
-
----
-
-### Rule 2: Lower precedence → REDUCE 
-If:
-
-```text
-precedence(input operator) < precedence(production operator)
-```
-
-Then:
-
-- **REDUCE** (because the current operator should finish first)
-
----
-
-### Rule 3: Same precedence → Use associativity 
-If:
-
-```text
-precedence(input operator) == precedence(production operator)
-```
-
-Then check associativity of that operator:
-
-- **left associativity** → **REDUCE**
-- **right associativity** → **SHIFT**
-- **none** → **ERROR**
-
-Why?
-
-- **left associative** means group from the left, so reduce earlier.
-- **right associative** means group from the right, so shift more first.
-- **none** means the parser should not accept chaining at that precedence.
-
----
-
-## Full Example (Easy + Clear)
-
-### Grammar
-```text
-E → E + E | E * E | id
-```
-
-### Precedence Rules
-```text
-+ 1 left
-* 2 left
-```
-
-### Input
 ```text
 id + id * id
 ```
 
-### What Should Happen (Intuition)
-- `*` has higher precedence than `+`
-- so the expression should parse like:
+Expected parse intention:
 
 ```text
 id + (id * id)
 ```
 
-### What the Parser Does During the Conflict
-At some point, the parser has something equivalent to:
+At the key conflict point, parser compares incoming `*` with reduction over `+`:
 
-- already seen: `id + id`
-- next input: `* id`
+- precedence(`*`) = 2
+- precedence(`+`) = 1
+- 2 > 1, so SHIFT is selected
 
-Now it must choose:
+This enforces multiplication before addition.
 
-- **REDUCE** using `E → E + E`  
-  (which would force `(id + id) * id`, which is wrong by precedence)
+## Output Views Explained
 
-OR
+- States:
+  - Augmented grammar
+  - FIRST/FOLLOW
+  - Canonical item sets
+- DFA:
+  - State transition graph + transition list
+- Table:
+  - ACTION and GOTO tables
+  - Cross-mode algorithm comparison block
+- Steps:
+  - Stack/input/action trace at each parser step
+- Parse Tree:
+  - Tree generated from reductions during successful parse
+- Conflicts:
+  - Unresolved conflicts
+  - Resolved conflicts with reason
 
-- **SHIFT** the `*`  
-  (so it can form `id * id` first)
+## Validation and Error Handling
 
-Using Rule 1:
+The app validates:
 
-- input operator `*` has precedence 2  
-- production operator `+` has precedence 1  
-- `2 > 1` ⇒ **SHIFT**
+- Empty grammar
+- Invalid production arrow format
+- Invalid non-terminal forms on LHS
+- Undefined non-terminals used in productions
+- Invalid precedence rule syntax
+- Invalid precedence level/associativity values
 
-So the parser shifts `*`, builds `id * id`, reduces that, and only then reduces the `+`.
+Runtime parse errors are shown in Steps/status outputs.
 
-Result:
+## Limitations
 
-```text
-id + (id * id)
-```
+- Client-side simulator intended for learning and demonstration.
+- No backend persistence (except browser local storage for saved runs).
+- Save/export is restricted to valid conflict-free grammar configurations.
+- Very large grammars may reduce UI responsiveness in browser.
 
----
+## Learning Goals Covered
+
+This project demonstrates practical understanding of:
+
+- Grammar augmentation
+- FIRST/FOLLOW computation
+- LR item closure and goto construction
+- SLR vs CLR vs LALR trade-offs
+- Parsing table construction
+- Conflict detection and precedence-based resolution
+- Stack-based LR parsing simulation
+
+## Future Enhancements
+
+- Better diagnostics for invalid token streams
+- Import/export grammar presets
+- More graph layout options for large DFA sets
+- Better parse tree interaction (zoom, collapse, search)
+- Test suite for grammar and parsing modules
+
+
