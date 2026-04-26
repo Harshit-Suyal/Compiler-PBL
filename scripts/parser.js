@@ -34,6 +34,7 @@ function parseInputString() {
         const simulation = simulateParsing(tokens);
         const steps = simulation.steps;
         parseTree = simulation.parseTree;
+        lastParsingRun = buildParsingRunSnapshot(parseInput, tokens, steps);
         displayParsingSteps(steps);
         displayParseTree();
 
@@ -54,6 +55,254 @@ function parseInputString() {
         if (typeof setStatusBar === 'function') {
             setStatusBar('Parsing failed due to runtime error.', 'error');
         }
+    }
+}
+
+function buildParsingRunSnapshot(parseInput, tokens, steps) {
+    const grammarInputEl = document.getElementById('grammarInput');
+    const precedenceInputEl = document.getElementById('precedenceInput');
+    const parserTypeEl = document.getElementById('parserType');
+
+    return {
+        timestamp: new Date().toISOString(),
+        parserType: parserTypeEl ? parserTypeEl.value : parserMode,
+        grammar: grammarInputEl ? grammarInputEl.value.trim() : '',
+        precedence: precedenceInputEl ? precedenceInputEl.value.trim() : '',
+        grammarIsValid: isGrammarValidForPersistence(),
+        input: parseInput,
+        tokens: tokens.slice(),
+        itemSets: snapshotItemSets(),
+        actionSymbols: getOrderedActionSymbols(),
+        gotoSymbols: getOrderedGotoSymbols(),
+        actionRows: snapshotActionRows(),
+        gotoRows: snapshotGotoRows(),
+        steps: steps.map(step => ({
+            step: step.step,
+            stack: step.stack.slice(),
+            symbols: step.symbols.slice(),
+            input: step.input,
+            action: step.action
+        }))
+    };
+}
+
+function isGrammarValidForPersistence() {
+    return (
+        parserStates.length > 0 &&
+        Object.keys(actionTable).length > 0 &&
+        Object.keys(gotoTable).length > 0 &&
+        conflicts.length === 0
+    );
+}
+
+function snapshotItemSets() {
+    const itemSets = [];
+
+    for (let i = 0; i < parserStates.length; i++) {
+        const state = parserStates[i];
+        const formattedItems = [];
+
+        for (let j = 0; j < state.length; j++) {
+            const item = state[j];
+            const before = item.rhs.slice(0, item.dot).join(' ');
+            const after = item.rhs.slice(item.dot).join(' ');
+            let text = `${item.lhs} -> ${before} . ${after}`.trim();
+
+            if (item.lookahead) {
+                text += `, ${item.lookahead}`;
+            }
+
+            formattedItems.push(text);
+        }
+
+        itemSets.push({
+            state: i,
+            items: formattedItems
+        });
+    }
+
+    return itemSets;
+}
+
+function getOrderedActionSymbols() {
+    const symbols = Array.from(terminals).sort();
+    if (!symbols.includes('$')) {
+        symbols.push('$');
+    }
+    return symbols;
+}
+
+function getOrderedGotoSymbols() {
+    const augStart = startSymbol + "'";
+    return Array.from(nonTerminals)
+        .filter(nt => nt !== augStart)
+        .sort();
+}
+
+function snapshotActionRows() {
+    const symbols = getOrderedActionSymbols();
+    const rows = [];
+
+    for (let i = 0; i < parserStates.length; i++) {
+        const row = { state: i };
+
+        for (let j = 0; j < symbols.length; j++) {
+            const symbol = symbols[j];
+            row[symbol] = actionTable[i][symbol] || '';
+        }
+
+        rows.push(row);
+    }
+
+    return rows;
+}
+
+function snapshotGotoRows() {
+    const symbols = getOrderedGotoSymbols();
+    const rows = [];
+
+    for (let i = 0; i < parserStates.length; i++) {
+        const row = { state: i };
+
+        for (let j = 0; j < symbols.length; j++) {
+            const symbol = symbols[j];
+            row[symbol] = gotoTable[i][symbol] !== undefined ? gotoTable[i][symbol] : '';
+        }
+
+        rows.push(row);
+    }
+
+    return rows;
+}
+
+function formatParsingRunAsText(run) {
+    const lines = [];
+
+    lines.push('LR Parser Simulation - Full Parsing Steps');
+    lines.push('Generated: ' + run.timestamp);
+    lines.push('Parser Type: ' + run.parserType);
+    lines.push('Input: ' + run.input);
+    lines.push('Tokens: ' + run.tokens.join(' '));
+    lines.push('Grammar Valid: ' + (run.grammarIsValid ? 'Yes' : 'No'));
+    lines.push('');
+    lines.push('Grammar:');
+    lines.push(run.grammar || '(empty)');
+
+    if (run.precedence) {
+        lines.push('');
+        lines.push('Precedence Rules:');
+        lines.push(run.precedence);
+    }
+
+    lines.push('');
+    lines.push('Canonical Item Sets:');
+    for (let i = 0; i < run.itemSets.length; i++) {
+        const itemSet = run.itemSets[i];
+        lines.push(`I${itemSet.state}:`);
+        for (let j = 0; j < itemSet.items.length; j++) {
+            lines.push('  ' + itemSet.items[j]);
+        }
+    }
+
+    lines.push('');
+    lines.push('ACTION Table:');
+    lines.push('State | ' + run.actionSymbols.join(' | '));
+    lines.push('-----|' + run.actionSymbols.map(() => '---').join('|'));
+    for (let i = 0; i < run.actionRows.length; i++) {
+        const row = run.actionRows[i];
+        const values = run.actionSymbols.map(symbol => row[symbol] || '');
+        lines.push(`${row.state} | ${values.join(' | ')}`);
+    }
+
+    lines.push('');
+    lines.push('GOTO Table:');
+    lines.push('State | ' + run.gotoSymbols.join(' | '));
+    lines.push('-----|' + run.gotoSymbols.map(() => '---').join('|'));
+    for (let i = 0; i < run.gotoRows.length; i++) {
+        const row = run.gotoRows[i];
+        const values = run.gotoSymbols.map(symbol => row[symbol] === '' ? '' : String(row[symbol]));
+        lines.push(`${row.state} | ${values.join(' | ')}`);
+    }
+
+    lines.push('');
+    lines.push('Parsing Steps:');
+    lines.push('Step | State Stack | Symbol Stack | Remaining Input | Action');
+    lines.push('-----|-------------|--------------|-----------------|-------');
+
+    for (let i = 0; i < run.steps.length; i++) {
+        const step = run.steps[i];
+        const stateStack = step.stack.join(' ');
+        const symbolStack = step.symbols.length > 0 ? step.symbols.join(' ') : 'e';
+        lines.push(`${step.step} | ${stateStack} | ${symbolStack} | ${step.input} | ${step.action}`);
+    }
+
+    return lines.join('\n');
+}
+
+function downloadTextFile(filename, content) {
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+function saveParsingStepsLocally() {
+    if (!lastParsingRun || !lastParsingRun.steps || lastParsingRun.steps.length === 0) {
+        if (typeof setStatusBar === 'function') {
+            setStatusBar('No parsing steps available. Run parse first.', 'warning');
+        }
+        return;
+    }
+
+    if (!lastParsingRun.grammarIsValid) {
+        if (typeof setStatusBar === 'function') {
+            setStatusBar('Cannot save. Save/export allowed only for conflict-free valid grammar.', 'warning');
+        }
+        return;
+    }
+
+    const STORAGE_KEY = 'lr-parser-saved-runs';
+    const existing = localStorage.getItem(STORAGE_KEY);
+    const savedRuns = existing ? JSON.parse(existing) : [];
+
+    savedRuns.push(lastParsingRun);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(savedRuns));
+
+    if (typeof setStatusBar === 'function') {
+        setStatusBar('Full parsing steps saved to browser storage.', 'success');
+    }
+}
+
+function exportParsingStepsToFile() {
+    if (!lastParsingRun || !lastParsingRun.steps || lastParsingRun.steps.length === 0) {
+        if (typeof setStatusBar === 'function') {
+            setStatusBar('No parsing steps available. Run parse first.', 'warning');
+        }
+        return;
+    }
+
+    if (!lastParsingRun.grammarIsValid) {
+        if (typeof setStatusBar === 'function') {
+            setStatusBar('Cannot export. Save/export allowed only for conflict-free valid grammar.', 'warning');
+        }
+        return;
+    }
+
+    const stamp = lastParsingRun.timestamp
+        .replace(/:/g, '-')
+        .replace(/\.\d+Z$/, 'Z');
+    const filename = `parsing-steps-${lastParsingRun.parserType}-${stamp}.txt`;
+    const content = formatParsingRunAsText(lastParsingRun);
+
+    downloadTextFile(filename, content);
+
+    if (typeof setStatusBar === 'function') {
+        setStatusBar('Full parsing steps exported as text file.', 'success');
     }
 }
 

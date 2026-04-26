@@ -5,12 +5,45 @@
 // Event Listeners
 document.getElementById('analyzeBtn').addEventListener('click', analyzeGrammar);
 document.getElementById('clearBtn').addEventListener('click', clearAll);
-document.getElementById('exampleBtn').addEventListener('click', loadExample);
+document.getElementById('exampleBtn').addEventListener('click', loadNextExample);
 document.addEventListener('click', function(event) {
     if (event.target && event.target.id === 'parseBtn') {
         parseInputString();
+    } else if (event.target && event.target.id === 'saveStepsBtn') {
+        saveParsingStepsLocally();
+    } else if (event.target && event.target.id === 'exportStepsBtn') {
+        exportParsingStepsToFile();
     }
 });
+
+const EXAMPLE_DEFINITIONS = {
+    valid: {
+        grammar: `E -> E + T | T
+T -> T * F | F
+F -> ( E ) | id`,
+        precedence: `+ 1 left
+* 2 left`,
+        input: `id + id * id`,
+        parserType: 'SLR'
+    },
+    slrFailClrPass: {
+        grammar: `S -> L = R | R
+L -> * R | id
+R -> L`,
+        precedence: '',
+        input: `id = id`,
+        parserType: 'SLR'
+    },
+    lalrClassic: {
+        grammar: `S -> C C
+C -> c C | d`,
+        precedence: '',
+        input: `c d d`,
+        parserType: 'LALR'
+    }
+};
+
+const EXAMPLE_ORDER = ['valid', 'slrFailClrPass', 'lalrClassic'];
 
 function setLoading(show) {
     const loader = document.getElementById('loadingIndicator');
@@ -57,6 +90,8 @@ function renderTabShells() {
             <div class="parse-input-section">
                 <input type="text" id="parseInput" placeholder="Enter input to parse (e.g., id + id * id)">
                 <button id="parseBtn" class="btn-primary">Parse Input</button>
+                <button id="saveStepsBtn" class="btn-secondary">Save Steps</button>
+                <button id="exportStepsBtn" class="btn-secondary">Export Steps</button>
             </div>
             <div id="parseResult" class="result-content"></div>
         `;
@@ -140,6 +175,7 @@ function clearAll() {
     startSymbol = '';
     precedence = {};
     productionPrecedence = [];
+    lastParsingRun = null;
 
     document.getElementById('parserType').value = 'SLR';
     clearTabContents();
@@ -149,19 +185,42 @@ function clearAll() {
     setStatusBar('Workspace reset. Add grammar and click Analyze Grammar.', 'info');
 }
 
-function loadExample() {
-    const exampleGrammar = `E -> E + T | T
-T -> T * F | F
-F -> ( E ) | id`;
-    
-    const examplePrecedence = `+ 1 left
-* 2 left`;
-    
-    const exampleInput = `id + id * id`;
-    
+function getCurrentExampleType() {
+    const currentGrammar = document.getElementById('grammarInput').value.trim();
+    const currentPrecedence = document.getElementById('precedenceInput').value.trim();
+    const currentParserType = document.getElementById('parserType').value;
+
+    for (const [type, example] of Object.entries(EXAMPLE_DEFINITIONS)) {
+        if (
+            currentGrammar === example.grammar &&
+            currentPrecedence === example.precedence &&
+            currentParserType === example.parserType
+        ) {
+            return type;
+        }
+    }
+
+    return null;
+}
+
+function loadNextExample() {
+    const currentType = getCurrentExampleType();
+    const currentIndex = EXAMPLE_ORDER.indexOf(currentType);
+    const nextIndex = currentIndex === -1 ? 0 : (currentIndex + 1) % EXAMPLE_ORDER.length;
+
+    loadExample(EXAMPLE_ORDER[nextIndex]);
+}
+
+function loadExample(type = 'valid') {
+    const selected = EXAMPLE_DEFINITIONS[type] || EXAMPLE_DEFINITIONS.valid;
+    const exampleGrammar = selected.grammar;
+    const examplePrecedence = selected.precedence;
+    const exampleInput = selected.input;
+    const parserType = selected.parserType;
+
     document.getElementById('grammarInput').value = exampleGrammar;
     document.getElementById('precedenceInput').value = examplePrecedence;
-    document.getElementById('parserType').value = 'SLR';
+    document.getElementById('parserType').value = parserType;
 
     const parseInputEl = document.getElementById('parseInput');
     if (parseInputEl) {
@@ -187,6 +246,7 @@ function analyzeGrammar() {
     try {
         hideError();
         setLoading(true);
+        lastParsingRun = null;
         clearTabContents();
         renderTabShells();
         showTab('states');

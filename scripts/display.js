@@ -91,21 +91,18 @@ function displayAugmentedGrammar() {
 function displayFirstSets() {
     const div = document.getElementById('firstSets');
     if (!div) return;
-
     let html = explainBlock(
         'FIRST Sets',
         'Shows which terminals can appear first from each non-terminal.',
         'FIRST helps compute lookaheads and parse decisions during table construction.'
     );
     html += '<pre>';
-    
     for (let nt of Array.from(nonTerminals).sort()) {
         if (firstSets[nt]) {
             const first = Array.from(firstSets[nt]).sort().join(', ');
             html += `FIRST(${nt}) = { ${first} }\n`;
         }
     }
-    
     html += '</pre>';
     div.innerHTML = html;
 }
@@ -132,6 +129,61 @@ function displayFollowSets() {
     div.innerHTML = html;
 }
 
+function compareLookaheads(a, b) {
+    // Keep end marker at the end for readable output like c/d/$.
+    if (a === '$' && b !== '$') return 1;
+    if (a !== '$' && b === '$') return -1;
+    return a.localeCompare(b);
+}
+
+function compactLALRStateItemsForDisplay(stateItems) {
+    const grouped = new Map();
+
+    for (let item of stateItems) {
+        const key = `${item.lhs}->${item.rhs.join(' ')}@${item.dot}`;
+        if (!grouped.has(key)) {
+            grouped.set(key, {
+                lhs: item.lhs,
+                rhs: item.rhs,
+                dot: item.dot,
+                lookaheads: new Set()
+            });
+        }
+
+        if (item.lookahead) {
+            grouped.get(key).lookaheads.add(item.lookahead);
+        }
+    }
+
+    const compacted = [];
+    for (let groupedItem of grouped.values()) {
+        compacted.push({
+            lhs: groupedItem.lhs,
+            rhs: groupedItem.rhs,
+            dot: groupedItem.dot,
+            lookaheadText: Array.from(groupedItem.lookaheads).sort(compareLookaheads).join('/')
+        });
+    }
+
+    return compacted;
+}
+
+function formatStateItemForDisplay(item) {
+    if (typeof item.toString === 'function' && item.toString !== Object.prototype.toString) {
+        return item.toString();
+    }
+
+    const before = item.rhs.slice(0, item.dot).join(' ');
+    const after = item.rhs.slice(item.dot).join(' ');
+    const coreText = `${item.lhs} -> ${before} • ${after}`.trim();
+
+    if (item.lookaheadText) {
+        return `${coreText}, ${item.lookaheadText}`;
+    }
+
+    return coreText;
+}
+
 function displayLR0States() {
     const div = document.getElementById('lr0States');
     if (!div) return;
@@ -151,8 +203,12 @@ function displayLR0States() {
         html += `<h4>I${i}</h4>`;
         html += '<pre class="state-items">';
 
-        for (let item of parserStates[i]) {
-            const itemText = escapeHtml(item.toString()).replace('•', '<span class="dot">•</span>');
+        const itemsToDisplay = parserMode === 'LALR'
+            ? compactLALRStateItemsForDisplay(parserStates[i])
+            : parserStates[i];
+
+        for (let item of itemsToDisplay) {
+            const itemText = escapeHtml(formatStateItemForDisplay(item)).replace('•', '<span class="dot">•</span>');
             const isClosureLike = item.dot === 0 && item.lhs !== `${startSymbol}'`;
             const itemClass = isClosureLike ? 'item-closure' : 'item-core';
             html += `<span class="${itemClass}">${itemText}</span>\n`;
@@ -350,7 +406,7 @@ function displayConflicts() {
     
     // Display resolved conflicts
     if (resolvedConflicts.length > 0) {
-        html += '<h4 style="color: #28a745; margin-bottom: 10px;">✅ Resolved Conflicts (using precedence/associativity)</h4>';
+        html += '<h4 style="color: #28a745; margin-bottom: 10px;">Resolved Conflicts (using precedence/associativity)</h4>';
         
         for (let resolved of resolvedConflicts) {
             html += `<div class="conflict-resolved">`;
@@ -427,9 +483,9 @@ function displayParsingSteps(steps) {
     html += '</tbody></table>';
     
     if (accepted) {
-        html += '<p class="parse-accept">✅ INPUT ACCEPTED - String is valid!</p>';
+        html += '<p class="parse-accept"> INPUT ACCEPTED - String is valid!</p>';
     } else {
-        html += '<p class="parse-reject">❌ INPUT REJECTED - String is invalid!</p>';
+        html += '<p class="parse-reject"> INPUT REJECTED - String is invalid!</p>';
     }
     
     div.innerHTML = html;
@@ -439,19 +495,15 @@ function explainStepReason(action) {
     if (action === 'ACCEPT') {
         return 'Input is fully matched and parser reached accept state.';
     }
-
     if (action.startsWith('Shift')) {
         return 'Shift moves next input symbol onto stack and transitions to a new state.';
     }
-
     if (action.startsWith('Reduce')) {
         return 'Reduce applies a completed production because dot reached end of rule.';
     }
-
     if (action.startsWith('ERROR')) {
         return 'No valid action exists for current state and lookahead symbol.';
     }
-
     return 'Parser continues according to table-driven decision.';
 }
 
@@ -459,12 +511,10 @@ function renderTreeNode(node) {
     if (!node) {
         return null;
     }
-
     const mappedNode = {
         name: node.symbol,
         children: []
     };
-
     if (node.children && node.children.length > 0) {
         for (let child of node.children) {
             const mappedChild = renderTreeNode(child);
@@ -473,14 +523,12 @@ function renderTreeNode(node) {
             }
         }
     }
-
     return mappedNode;
 }
 
 function displayParseTree() {
     const div = document.getElementById('parseTree');
     if (!div) return;
-
     if (!parseTree) {
         div.innerHTML = `${explainBlock(
             'Parse Tree',
@@ -489,19 +537,15 @@ function displayParseTree() {
         )}<p>Parse tree will appear after a successful parse.</p>`;
         return;
     }
-
     if (typeof d3 === 'undefined') {
         div.innerHTML = '<p>D3.js is not loaded, cannot render tree.</p>';
         return;
     }
-
     const treeData = renderTreeNode(parseTree);
     const wrapper = document.createElement('div');
     wrapper.className = 'parse-tree-wrapper';
-
     const width = Math.max(900, div.clientWidth || 900);
     const height = Math.max(500, parserStates.length * 28);
-
     const svg = d3.create('svg')
         .attr('class', 'parse-tree-svg')
         .attr('viewBox', `0 0 ${width} ${height}`)
@@ -510,9 +554,7 @@ function displayParseTree() {
     const root = d3.hierarchy(treeData);
     const treeLayout = d3.tree().size([width - 140, height - 100]);
     treeLayout(root);
-
     const g = svg.append('g').attr('transform', 'translate(70,50)');
-
     g.selectAll('.tree-link')
         .data(root.links())
         .enter()

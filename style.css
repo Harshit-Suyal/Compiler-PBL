@@ -104,6 +104,17 @@ body {
     font-size: 0.95rem;
 }
 
+.parse-input-section {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.parse-input-section #parseInput {
+    flex: 1 1 320px;
+}
+
 #grammarInput {
     min-height: 200px;
     resize: vertical;

@@ -198,11 +198,12 @@ function statesEqual(state1, state2) {
 }
 
     function stateCoreKey(state) {
-        const parts = state
-            .map(item => `${item.lhs}->${item.rhs.join(' ')}@${item.dot}`)
-            .sort();
+        // LALR merging must compare LR(0) cores as a set, not by LR(1) item count.
+        const coreParts = new Set(
+            state.map(item => `${item.lhs}->${item.rhs.join(' ')}@${item.dot}`)
+        );
 
-        return parts.join('|');
+        return Array.from(coreParts).sort().join('|');
     }
 
     function buildCanonicalCollectionLR0() {
