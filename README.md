@@ -21,7 +21,7 @@ You can provide a context-free grammar, select parser mode (SLR, CLR, or LALR), 
 
 The app visualizes:
 
-- Augmented grammar
+- Augmented grammar. 
 - FIRST and FOLLOW sets
 - Canonical item sets (states)
 - DFA transitions between states
